@@ -62,11 +62,29 @@ spaceship_host() {
   fi
 }
 
+# PWD a la Gitster theme
+# https://github.com/shashankmehta/dotfiles/blob/master/thesetup/zsh/.oh-my-zsh/custom/themes/gitster.zsh-theme
+function get_pwd(){
+  git_root=$PWD
+  while [[ $git_root != / && ! -e $git_root/.git ]]; do
+    git_root=$git_root:h
+  done
+  if [[ $git_root = / ]]; then
+    unset git_root
+    prompt_short_dir=%~
+  else
+    parent=${git_root%\/*}
+    prompt_short_dir=${PWD#$parent/}
+  fi
+  echo $prompt_short_dir
+}
+
 # Current directory.
-# Return only three last items of path
+# Uses Gitster's pathing structure
+# https://github.com/robbyrussell/oh-my-zsh/wiki/External-themes#gitster
 spaceship_current_dir() {
   echo -n "%{$fg_bold[cyan]%}"
-  echo -n "%${SPACESHIP_PROMPT_TRUNC}~";
+  echo -n "$(get_pwd)";
   echo -n "%{$reset_color%}"
 }
 
